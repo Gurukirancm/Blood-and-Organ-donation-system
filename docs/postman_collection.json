@@ -1,0 +1,53 @@
+{
+  "info": {
+    "name": "Smart Donation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"alice@example.com\",\"password\":\"Secret123!\",\"role\":\"donor\"}"
+        },
+        "url": { "raw": "http://127.0.0.1:8000/api/auth/register", "host": ["http://127.0.0.1:8000"], "path": ["api","auth","register"] }
+      }
+    },
+    {
+      "name": "Get Token",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/x-www-form-urlencoded" } ],
+        "body": { "mode": "urlencoded", "urlencoded": [ { "key": "username", "value": "alice@example.com"}, {"key":"password","value":"Secret123!"} ] },
+        "url": { "raw": "http://127.0.0.1:8000/api/auth/token", "host": ["http://127.0.0.1:8000"], "path": ["api","auth","token"] }
+      }
+    },
+    {
+      "name": "Create Donor (auth)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"name\":\"Alice\",\"age\":30,\"blood_group\":\"O+\",\"organ\":\"Kidney\",\"phone\":\"+911234567890\",\"location\":\"Bengaluru\"}" },
+        "url": { "raw": "http://127.0.0.1:8000/api/donors/", "host": ["http://127.0.0.1:8000"], "path": ["api","donors"] }
+      }
+    },
+    {
+      "name": "List Donors",
+      "request": { "method": "GET", "url": { "raw": "http://127.0.0.1:8000/api/donors/", "host": ["http://127.0.0.1:8000"], "path": ["api","donors"] } }
+    },
+    {
+      "name": "Match Request",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"blood_group\":\"O+\",\"organ\":\"Kidney\",\"urgency\":\"high\"}" },
+        "url": { "raw": "http://127.0.0.1:8000/api/requests/match", "host": ["http://127.0.0.1:8000"], "path": ["api","requests","match"] }
+      }
+    }
+  ]
+}

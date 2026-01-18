@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  database:
+    image: mongo:latest
+    container_name: blood_organ_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: blood_organ_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - database
+
+  frontend:
+    build: ./frontend
+    container_name: blood_organ_frontend
+    ports:
+      - "5173:5173"
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongo_data:
