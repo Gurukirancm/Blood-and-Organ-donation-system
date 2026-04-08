@@ -1,6 +1,11 @@
 from fastapi import FastAPI
+# Force reload
 from fastapi.middleware.cors import CORSMiddleware
+import sys
 from routes.donor_routes import donor_router
+import models.donor_schema
+print("DEBUG: sys.path:", sys.path)
+print("DEBUG: models.donor_schema file:", models.donor_schema.__file__)
 from routes.hospital_routes import hospital_router
 from routes.request_routes import request_router
 from routes.auth_routes import auth_router
@@ -50,3 +55,12 @@ def root():
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+@app.get("/api/debug-schema")
+def debug_schema():
+    import models.donor_schema
+    return models.donor_schema.DonorModel.schema()
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

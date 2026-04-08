@@ -1,20 +1,21 @@
 from typing import List, Optional
-from models.donor import Donor
+from models.donor_schema import DonorModel
 from repositories.base_repository import BaseRepository
 
-class DonorRepository(BaseRepository[Donor, Donor, Donor]):
+class DonorRepository(BaseRepository[DonorModel, DonorModel, DonorModel]):
     def __init__(self):
-        super().__init__("donors", Donor)
+        super().__init__("donors", DonorModel)
 
-    def get_by_blood_group(self, blood_group: str) -> List[Donor]:
-        cursor = self.collection.find({"blood_group": blood_group})
+    def get_by_blood_group(self, blood_group: str) -> List[DonorModel]:
+        cursor = self.collection.find({"blood_group": blood_group, "donate_blood": True, "availability": True})
         return [self.model(**self._serialize(doc)) for doc in cursor]
     
-    def get_by_organ(self, organ: str) -> List[Donor]:
-        cursor = self.collection.find({"organ": organ, "availability": True})
+    def get_by_organ(self, organ: str) -> List[DonorModel]:
+        # The DonorModel has 'organs' list field, not 'organ'
+        cursor = self.collection.find({"organs": organ, "availability": True})
         return [self.model(**self._serialize(doc)) for doc in cursor]
 
-    def get_by_user_id(self, user_id: str) -> Optional[Donor]:
+    def get_by_user_id(self, user_id: str) -> Optional[DonorModel]:
         doc = self.collection.find_one({"user_id": user_id})
         return self.model(**self._serialize(doc)) if doc else None
 

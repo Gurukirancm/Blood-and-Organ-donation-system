@@ -21,8 +21,13 @@ class MatchingService:
         if not request:
             raise ValueError(f"Request with ID {request_id} not found")
 
-        # 2. Fetch Potential Donors by organ
-        donors = self.donor_repository.get_by_organ(request.organ)
+        # 2. Fetch Potential Donors
+        if request.organ == "Whole Blood":
+            # Matching blood donors based on blood group compatibility
+            donors = self.donor_repository.get_by_blood_group(request.blood_group)
+        else:
+            # Matching organ donors based on organ type
+            donors = self.donor_repository.get_by_organ(request.organ)
         
         # Convert models to dicts for the AI module
         donor_dicts = []

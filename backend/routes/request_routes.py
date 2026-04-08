@@ -19,7 +19,7 @@ def create_request(req: DonationRequest, current_user: dict = Depends(get_curren
         raise HTTPException(status_code=500, detail="Failed to create request")
 
 
-@request_router.get("/", response_model=List[DonationRequest], dependencies=[Depends(RoleChecker(["recipient", "hospital", "admin"]))])
+@request_router.get("/", response_model=List[DonationRequest], dependencies=[Depends(RoleChecker(["recipient", "hospital", "admin", "donor"]))])
 def list_requests(current_user: dict = Depends(get_current_user), service: RequestService = Depends(get_request_service)):
     # Filter by user role
     filter_query = {}
@@ -28,6 +28,10 @@ def list_requests(current_user: dict = Depends(get_current_user), service: Reque
     elif current_user.role == "hospital":
         # Hospitals only see requests that are ready for action or completed
         filter_query["status"] = {"$in": ["matched", "fulfilled"]}
+    elif current_user.role == "donor":
+        # Donors can see pending requests to volunteer/match
+        # In a real system, we might filter by blood group compatibility here using service logic
+        filter_query["status"] = "pending"
         
     return service.list_requests(filter_query=filter_query)
 

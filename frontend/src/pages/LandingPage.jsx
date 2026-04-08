@@ -3,63 +3,118 @@ import { Link } from 'react-router-dom'
 
 export default function LandingPage() {
     return (
-        <div className="landing-page" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-                <h1 style={{ fontSize: '3.5rem', marginBottom: '1rem', color: '#2d3748' }}>🩸 LifeConnect</h1>
-                <p style={{ fontSize: '1.25rem', color: '#4a5568', maxWidth: '600px', margin: '0 auto' }}>
-                    Advanced Smart Blood & Organ Donation Management System.
-                    AI-driven matching for life-saving connections.
-                </p>
+        <div className="landing-page">
+            <header>
+                <h1>Connect Life</h1>
+                <nav>
+                    <Link to="/login/donor">Donor</Link>
+                    <Link to="/login/recipient">Recipient</Link>
+                    <Link to="/login/hospital">Hospital</Link>
+                    <Link to="/login/admin">Admin</Link>
+                </nav>
+            </header>
+
+            <div className="hero-section">
+                <div className="hero-content">
+                    <h1 className="hero-title">Connect Life</h1>
+                    <p className="hero-subtitle">
+                        AI-Powered Smart Blood and Organ Donation Management System
+                    </p>
+                    <div className="hero-cta">
+                        <Link to="/register" className="cta-button">
+                            Get Started
+                        </Link>
+                    </div>
+                </div>
             </div>
 
-            <div className="portal-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', width: '100%', maxWidth: '1200px' }}>
+            <div className="section-title">
+                <h2>Platform Highlights</h2>
+            </div>
 
+            <div className="features-grid">
+                <div className="feature-card">
+                    <div className="feature-icon">🧬</div>
+                    <h3>AI-Based Donor Matching</h3>
+                    <p>Intelligent compatibility scoring for precise life-saving connections.</p>
+                </div>
+                <div className="feature-card">
+                    <div className="feature-icon">🛡️</div>
+                    <h3>Blockchain Security</h3>
+                    <p>Immutable medical records ensuring data integrity and trust.</p>
+                </div>
+                <div className="feature-card">
+                    <div className="feature-icon">☁️</div>
+                    <h3>Cloud-Based Access</h3>
+                    <p>Real-time system availability for hospitals and donors anywhere.</p>
+                </div>
+                <div className="feature-card">
+                    <div className="feature-icon">🚑</div>
+                    <h3>Emergency Priority</h3>
+                    <p>Smart queuing system to handle critical requests instantly.</p>
+                </div>
+                <div className="feature-card">
+                    <div className="feature-icon">🏥</div>
+                    <h3>Hospital Coordination</h3>
+                    <p>Seamless inventory and request management for medical facilities.</p>
+                </div>
+                <div className="feature-card">
+                    <div className="feature-icon">🔔</div>
+                    <h3>Smart Notifications</h3>
+                    <p>Automated multi-channel alerts for matches and urgent needs.</p>
+                </div>
+            </div>
+
+            <div className="section-title">
+                <h2>Access Portals</h2>
+            </div>
+
+            <div className="portal-grid">
                 {/* Donor Portal Card */}
-                <Link to="/login/donor" style={{ textDecoration: 'none' }}>
-                    <div className="portal-card" style={cardStyle}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>💚</div>
-                        <h2 style={{ color: '#2d3748', marginBottom: '0.5rem' }}>Donor Portal</h2>
-                        <p style={{ color: '#718096' }}>Register to donate blood or organs. Track your donation history.</p>
-                        <div style={{ marginTop: '1.5rem', color: '#38a169', fontWeight: 'bold' }}>Login as Donor →</div>
+                <Link to="/login/donor" className="portal-link">
+                    <div className="portal-card">
+                        <div className="portal-icon">💚</div>
+                        <h2>Donor Portal</h2>
+                        <p>Register to donate blood or organs. Track your donation history.</p>
+                        <div className="portal-action">Login as Donor →</div>
                     </div>
                 </Link>
 
                 {/* Recipient Portal Card */}
-                <Link to="/login/recipient" style={{ textDecoration: 'none' }}>
-                    <div className="portal-card" style={cardStyle}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>❤️</div>
-                        <h2 style={{ color: '#2d3748', marginBottom: '0.5rem' }}>Recipient Portal</h2>
-                        <p style={{ color: '#718096' }}>Request blood or organs. View real-time availability and matches.</p>
-                        <div style={{ marginTop: '1.5rem', color: '#e53e3e', fontWeight: 'bold' }}>Login as Recipient →</div>
+                <Link to="/login/recipient" className="portal-link">
+                    <div className="portal-card">
+                        <div className="portal-icon">❤️</div>
+                        <h2>Recipient Portal</h2>
+                        <p>Request blood or organs. View real-time availability and matches.</p>
+                        <div className="portal-action">Login as Recipient →</div>
                     </div>
                 </Link>
 
                 {/* Hospital Portal Card */}
-                <Link to="/login/hospital" style={{ textDecoration: 'none' }}>
-                    <div className="portal-card" style={cardStyle}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏥</div>
-                        <h2 style={{ color: '#2d3748', marginBottom: '0.5rem' }}>Hospital Portal</h2>
-                        <p style={{ color: '#718096' }}>Manage inventory, view requests, and access AI matching engine.</p>
-                        <div style={{ marginTop: '1.5rem', color: '#3182ce', fontWeight: 'bold' }}>Login as Hospital →</div>
+                <Link to="/login/hospital" className="portal-link">
+                    <div className="portal-card">
+                        <div className="portal-icon">🏥</div>
+                        <h2>Hospital Portal</h2>
+                        <p>Manage inventory, view requests, and access AI matching engine.</p>
+                        <div className="portal-action">Login as Hospital →</div>
                     </div>
                 </Link>
 
                 {/* Admin Portal Card */}
-                <Link to="/login/admin" style={{ textDecoration: 'none' }}>
-                    <div className="portal-card" style={cardStyle}>
-                        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔐</div>
-                        <h2 style={{ color: '#2d3748', marginBottom: '0.5rem' }}>Admin Portal</h2>
-                        <p style={{ color: '#718096' }}>System oversight, user management, and global analytics.</p>
-                        <div style={{ marginTop: '1.5rem', color: '#805ad5', fontWeight: 'bold' }}>Login as Admin →</div>
+                <Link to="/login/admin" className="portal-link">
+                    <div className="portal-card">
+                        <div className="portal-icon">🔐</div>
+                        <h2>Admin Portal</h2>
+                        <p>System oversight, user management, and global analytics.</p>
+                        <div className="portal-action">Login as Admin →</div>
                     </div>
                 </Link>
-
             </div>
 
-            <footer style={{ marginTop: '4rem', color: '#718096', fontSize: '0.9rem' }}>
-                © 2026 LifeConnect System. Secure & Compliant.
+            <footer>
+                © 2026 Connect Life System. AI-Powered & Blockchain Secured.
             </footer>
-        </div>
+        </div >
     )
 }
 

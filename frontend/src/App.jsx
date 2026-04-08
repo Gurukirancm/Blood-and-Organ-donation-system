@@ -9,19 +9,35 @@ import DonorPortal from './pages/DonorPortal'
 import RecipientPortal from './pages/RecipientPortal'
 import HospitalPortal from './pages/HospitalPortal'
 import LandingPage from './pages/LandingPage'
+import Register from './pages/Register'
+import DonorLogin from './pages/DonorLogin'
+import RecipientLogin from './pages/RecipientLogin'
+import HospitalLogin from './pages/HospitalLogin'
+import AdminLogin from './pages/AdminLogin'
+import DonorProfileSetup from './pages/DonorProfileSetup'
 import API from './api'
 
 export default function App() {
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const location = useLocation()
-  const isLoginPage = location.pathname === '/login' || location.pathname === '/'
+  const isLoginPage = ['/login', '/', '/register', '/donor/setup'].includes(location.pathname) || location.pathname.startsWith('/login/')
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      API.setToken(token)
-      fetchUser()
+    const checkUser = async () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        API.setToken(token)
+        try {
+          const res = await API.get('/api/auth/me')
+          setUser(res.data)
+        } catch (err) {
+          localStorage.removeItem('token')
+        }
+      }
+      setLoading(false)
     }
+    checkUser()
   }, [])
 
   const fetchUser = async () => {
@@ -37,7 +53,10 @@ export default function App() {
     localStorage.removeItem('token')
     setUser(null)
     API.setToken(null)
+    window.location.href = '/login'
   }
+
+  if (loading) return <div className="loading-spinner">Loading...</div>
 
   return (
     <div className="app">
@@ -54,19 +73,12 @@ export default function App() {
           </div>
           {user && (
             <nav>
-              <Link to="/dashboard">
-                📊 Unified Dashboard
-              </Link>
-              <Link to="/donor-portal">
-                💚 Donor Portal
-              </Link>
-              <Link to="/recipient-portal">
-                ❤️ Recipient Portal
-              </Link>
-              <Link to="/hospital-portal">
-                🏥 Hospital Portal
-              </Link>
-              <button className="secondary" onClick={() => { handleLogout(); window.location.href = '/login' }} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+              {user.role === 'donor' && <Link to="/donor/dashboard">📊 Dashboard</Link>}
+              {user.role === 'recipient' && <Link to="/recipient/dashboard">❤️ Portal</Link>}
+              {user.role === 'hospital' && <Link to="/hospital/dashboard">🏥 Hospital</Link>}
+              {user.role === 'admin' && <Link to="/admin/dashboard">🛡️ Admin</Link>}
+
+              <button className="secondary" onClick={handleLogout} style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
                 🚪 Logout
               </button>
             </nav>
@@ -77,15 +89,20 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login onLoginSuccess={() => fetchUser()} />} />
-          <Route path="/login/:role" element={<Login onLoginSuccess={() => fetchUser()} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login/donor" element={<DonorLogin />} />
+          <Route path="/login/recipient" element={<RecipientLogin />} />
+          <Route path="/login/hospital" element={<HospitalLogin />} />
+          <Route path="/login/admin" element={<AdminLogin />} />
 
           {/* Secured Role Routes */}
           <Route path="/donor/dashboard" element={user && user.role === 'donor' ? <DonorDashboard /> : <Login onLoginSuccess={() => fetchUser()} />} />
+          <Route path="/donor/setup" element={user && user.role === 'donor' ? <DonorProfileSetup /> : <Login onLoginSuccess={() => fetchUser()} />} />
           <Route path="/hospital/dashboard" element={user && user.role === 'hospital' ? <HospitalDashboard /> : <Login onLoginSuccess={() => fetchUser()} />} />
           <Route path="/admin/dashboard" element={user && user.role === 'admin' ? <AdminDashboard /> : <Login onLoginSuccess={() => fetchUser()} />} />
           <Route path="/recipient/dashboard" element={user && user.role === 'recipient' ? <RecipientPortal /> : <Login onLoginSuccess={() => fetchUser()} />} />
 
-          <Route path="/dashboard" element={<UnifiedDashboard />} /> {/* Keep for dev/fallback or remove */}
+          <Route path="/dashboard" element={<UnifiedDashboard />} />
         </Routes>
       </main>
     </div>

@@ -68,3 +68,10 @@ class BaseRepository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 pass
         result = self.collection.delete_one({"_id": id})
         return result.deleted_count > 0
+
+    def count(self, filter_query: Optional[Dict[str, Any]] = None) -> int:
+        query = filter_query or {}
+        return self.collection.count_documents(query)
+
+    def get_all(self) -> List[ModelType]:
+        return self.get_multi(limit=1000) # Reasonable upper bound for this project

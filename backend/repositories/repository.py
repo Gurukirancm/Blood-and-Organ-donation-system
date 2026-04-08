@@ -219,6 +219,15 @@ class HospitalRepository(Repository):
         """Get total hospital count."""
         return len(self.hospitals)
 
+    def delete(self, hospital_id: str) -> bool:
+        """Delete hospital record."""
+        for i, hospital in enumerate(self.hospitals):
+            if hospital.get("id") == hospital_id:
+                self.hospitals.pop(i)
+                self._save_hospitals()
+                return True
+        return False
+
 
 class DonationRequestRepository(Repository):
     """Repository for donation request data access."""
@@ -325,19 +334,22 @@ class RepositoryFactory:
     def get_donor_repository(cls) -> DonorRepository:
         """Get or create donor repository singleton."""
         if cls._donor_repo is None:
-            cls._donor_repo = DonorRepository()
+            from .donor_repository import DonorRepository as NewDonorRepository
+            cls._donor_repo = NewDonorRepository()
         return cls._donor_repo
     
     @classmethod
     def get_hospital_repository(cls) -> HospitalRepository:
         """Get or create hospital repository singleton."""
         if cls._hospital_repo is None:
-            cls._hospital_repo = HospitalRepository()
+            from .hospital_repository import HospitalRepository as NewHospitalRepository
+            cls._hospital_repo = NewHospitalRepository()
         return cls._hospital_repo
     
     @classmethod
     def get_request_repository(cls) -> DonationRequestRepository:
         """Get or create request repository singleton."""
         if cls._request_repo is None:
-            cls._request_repo = DonationRequestRepository()
+            from .request_repository import RequestRepository as NewRequestRepository
+            cls._request_repo = NewRequestRepository()
         return cls._request_repo

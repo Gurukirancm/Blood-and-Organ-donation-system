@@ -1,6 +1,28 @@
 from typing import List, Dict, Any, Optional
 from bson import ObjectId
 
+class MockCursor:
+    def __init__(self, data: List[Dict[str, Any]]):
+        self.data = data
+        self._skip = 0
+        self._limit = None
+
+    def skip(self, n: int):
+        self._skip = n
+        return self
+
+    def limit(self, n: int):
+        self._limit = n
+        return self
+
+    def __iter__(self):
+        start = self._skip
+        end = (start + self._limit) if self._limit is not None else None
+        return iter(self.data[start:end])
+
+    def __getitem__(self, index):
+        return self.data[index]
+
 class MockCollection:
     def __init__(self, name: str):
         self.name = name
@@ -21,9 +43,9 @@ class MockCollection:
                 return item
         return None
 
-    def find(self, query: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+    def find(self, query: Dict[str, Any] = None) -> MockCursor:
         if not query:
-            return list(self.data.values())
+            return MockCursor(list(self.data.values()))
         
         results = []
         for item in self.data.values():
@@ -34,7 +56,7 @@ class MockCollection:
                     break
             if match:
                 results.append(item)
-        return results
+        return MockCursor(results)
 
     def insert_one(self, document: Dict[str, Any]):
         if "_id" not in document:
@@ -65,3 +87,24 @@ class MockCollection:
             del self.data[str(doc["_id"])]
             return type('obj', (object,), {'deleted_count': 1})
         return type('obj', (object,), {'deleted_count': 0})
+
+    def delete_many(self, query: Dict[str, Any] = None):
+        if not query or query == {}:
+            count = len(self.data)
+            self.data = {}
+            return type('obj', (object,), {'deleted_count': count})
+        
+        # Simple query-based delete_many
+        to_delete = []
+        for k, v in self.data.items():
+            match = True
+            for qk, qv in query.items():
+                if v.get(qk) != qv:
+                    match = False
+                    break
+            if match:
+                to_delete.append(k)
+        
+        for k in to_delete:
+            del self.data[k]
+        return type('obj', (object,), {'deleted_count': len(to_delete)})

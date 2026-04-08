@@ -4,7 +4,6 @@ Uses machine learning to find the best donor matches based on multiple factors
 Final Year Project Enhancement
 """
 
-import numpy as np
 from datetime import datetime
 from typing import List, Dict, Tuple
 

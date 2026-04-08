@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Body
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from services.auth_service import AuthService
@@ -15,6 +15,10 @@ class UserCreate(BaseModel):
     email: str
     password: str
     role: str = "donor"
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 class Token(BaseModel):
     access_token: str
@@ -34,14 +38,25 @@ def register(user: UserCreate):
         auth_service.register_user(user.email, user.password, user.role)
         return success_response(message="User registered successfully")
     except ValueError as e:
-        return error_response(message=str(e), code=400)
+        # Return 400 Bad Request if user already exists or other validation error
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=400, content=error_response(message=str(e)))
     except Exception as e:
+        from fastapi.responses import JSONResponse
         logging.error(f"Registration error: {e}")
-        return error_response(message="Internal server error", code=500)
+        return JSONResponse(status_code=500, content=error_response(message="Internal server error"))
+
+# Test endpoint to verify body parsing
+@auth_router.post("/test-body")
+def test_body(data: dict = Body(...)):
+    logging.info(f"Test body received: {data}")
+    return {"received": data, "keys": list(data.keys())}
 
 @auth_router.post("/token", response_model=Token)
-def login(email: str, password: str):
-    user = auth_service.authenticate_user(email, password)
+def login(credentials: LoginRequest):
+    logging.info(f"Login attempt - received credentials object: {credentials}")
+    logging.info(f"Email: {credentials.email}, Password length: {len(credentials.password)}")
+    user = auth_service.authenticate_user(credentials.email, credentials.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

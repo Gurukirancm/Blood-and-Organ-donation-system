@@ -1,5 +1,5 @@
 from typing import List, Optional
-from models.donor import Donor
+from models.donor_schema import DonorModel
 from repositories.donor_repository import DonorRepository
 
 from services.blockchain_service import BlockchainService
@@ -9,7 +9,7 @@ class DonorService:
         self.repository = DonorRepository()
         self.blockchain_service = BlockchainService()
 
-    def create_donor(self, donor: Donor) -> Donor:
+    def create_donor(self, donor: DonorModel) -> DonorModel:
         # 1. Business Logic: Validate age/eligibility
         # 2. Save to DB
         created_donor = self.repository.create(donor)
@@ -18,7 +18,7 @@ class DonorService:
         try:
             self.blockchain_service.log_donor_registration(
                 donor_id=str(created_donor.id),
-                donor_name=created_donor.name,
+                donor_name=f"{created_donor.first_name} {created_donor.last_name}",
                 blood_group=created_donor.blood_group
             )
         except Exception:

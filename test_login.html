@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+</head>
+<body>
+    <h1>Login Test</h1>
+    <div>
+        <h2>1. Register User</h2>
+        <button onclick="testRegister()">Register testuser@example.com</button>
+        <pre id="register-result"></pre>
+    </div>
+    
+    <div>
+        <h2>2. Login User</h2>
+        <button onclick="testLogin()">Login testuser@example.com</button>
+        <pre id="login-result"></pre>
+    </div>
+    
+    <div>
+        <h2>3. Get User Info</h2>
+        <button onclick="testMe()">Get /api/auth/me</button>
+        <pre id="me-result"></pre>
+    </div>
+
+    <script>
+        let token = null;
+
+        async function testRegister() {
+            const result = document.getElementById('register-result');
+            result.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'testuser@example.com',
+                        password: 'password123',
+                        role: 'donor'
+                    })
+                });
+                
+                const data = await response.json();
+                result.textContent = `Status: ${response.status}\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testLogin() {
+            const result = document.getElementById('login-result');
+            result.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'testuser@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                result.textContent = `Status: ${response.status}\n${JSON.stringify(data, null, 2)}`;
+                
+                if (response.ok && data.access_token) {
+                    token = data.access_token;
+                    result.textContent += '\n\nToken saved! You can now test /api/auth/me';
+                }
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function testMe() {
+            const result = document.getElementById('me-result');
+            
+            if (!token) {
+                result.textContent = 'Please login first to get a token!';
+                return;
+            }
+            
+            result.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                result.textContent = `Status: ${response.status}\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                result.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
